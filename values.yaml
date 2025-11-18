@@ -1,0 +1,85 @@
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: "stable"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+
+ingress:
+  enabled: true
+  host: demo-app.local
+  className: "nginx"  # set to ingress class if required e.g. nginx
+  annotations: 
+    # add provider-specific annotations, example for nginx ingress:
+    # kubernetes.io/ingress.class: "nginx"
+  tls: false
+
+serviceAccount:
+  create: true
+  name: ""
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+probes:
+  liveness:
+    enabled: true
+    path: /healthz #http://<pod-ip>:80/healthz
+    port: 80
+    initialDelaySeconds: 10 
+    periodSeconds: 20
+    timeoutSeconds: 5 
+    failureThreshold: 3 
+  readiness:
+    enabled: true
+    path: /ready
+    port: 80
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 3
+  startup:
+    enabled: true
+    path: /startup
+    port: 80
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 30
+
+hpa:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 50
+
+config:
+  # example config to be put into a ConfigMap. Checksum will be calculated from this.
+  LOG_LEVEL: info
+  SPECIAL_FEATURE_ENABLED: "true"
+
+podAnnotations: {}
+# example: podAnnotations: { "prometheus.io/scrape": "true", "prometheus.io/port": "9117" }
+
+nodeSelector: {}
+#nodeSelector:
+#disktype: ssd
+tolerations: []
+#tolerations:
+#- key: "critical"
+#    operator: "Exists"
+#    effect: "NoSchedule"
+
+affinity: {}
+#Controls advanced scheduling rules.
+#(Where pods should run or shouldn’t run.)
