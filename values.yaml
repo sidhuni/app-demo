@@ -34,7 +34,7 @@ resources:
 probes:
   liveness:
     enabled: true
-    path: /healthz #http://<pod-ip>:80/healthz
+    path: / #http://<pod-ip>:80/healthz
     port: 80
     initialDelaySeconds: 10 
     periodSeconds: 20
@@ -42,7 +42,7 @@ probes:
     failureThreshold: 3 
   readiness:
     enabled: true
-    path: /ready
+    path: /
     port: 80
     initialDelaySeconds: 5
     periodSeconds: 10
@@ -50,7 +50,7 @@ probes:
     failureThreshold: 3
   startup:
     enabled: true
-    path: /startup
+    path: /
     port: 80
     initialDelaySeconds: 5
     periodSeconds: 10
